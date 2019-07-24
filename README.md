@@ -1,5 +1,5 @@
 ## pjx
-pjx is a tool helps auto-generate server side directories and some go code.The generated directories will look like:
+pjx is a tool helps auto-generate server side directories and some go code.
 
 ## Start
 `go get -u github.com/fwhezfwhez/pjx`
@@ -16,6 +16,7 @@ Take helloWorld project for example:
 `pjx module user`
 
 ## Doc
+The generated directories will look like:
 
 ```txt
 appName
