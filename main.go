@@ -8,25 +8,26 @@ import (
 	"runtime/debug"
 	"strings"
 )
+
 var pj Pjx
+
 func main() {
 	// set pj gomodule
 	flag.BoolVar(&pj.GOModule, "gomodule", false, "pjx -gomodule true")
-    flag.Parse()
+	flag.Parse()
 	// set appPath
 	var e error
-    pj.AppPath,e = os.Getwd()
-    if e!=nil {
-    	panic(e)
+	pj.AppPath, e = os.Getwd()
+	if e != nil {
+		panic(e)
 	}
-
 
 	args := os.Args[1:]
 
 	switch args[0] {
-	case "version","--version":
+	case "version", "--version":
 		fmt.Println(pj.Version())
-	case "help","--help":
+	case "help", "--help":
 		fmt.Println(pj.Usage())
 	case "new":
 		appName := args[1]
