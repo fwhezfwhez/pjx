@@ -16,7 +16,7 @@ Take helloWorld project for example:
 `pjx module user`
 
 <p align="left">
-    <img src="http://i2.tiimg.com/684630/b10b449ce4e75370.gif">
+    <a href="http://i2.tiimg.com/684630/b10b449ce4e75370.gif"><img src="http://i2.tiimg.com/684630/b10b449ce4e75370.gif"></a>
 </p>
 
 ## Doc
