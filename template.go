@@ -31,7 +31,6 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"os"
-	"runtime/debug"
 )
 
 var Cfg *viper.Viper
