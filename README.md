@@ -9,11 +9,15 @@ Make sure in cmd type `pjx --version`, output normal.
 ## Flow
 Take helloWorld project for example:
 
-`pjx new helloWorld`
+`pjx new helloworld`
 
-`cd helloWorld`
+`cd helloworld`
 
 `pjx module user`
+
+<p align="left">
+    <img src="http://i2.tiimg.com/684630/b10b449ce4e75370.gif">
+</p>
 
 ## Doc
 The generated directories will look like:
