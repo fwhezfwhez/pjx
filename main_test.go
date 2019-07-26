@@ -18,3 +18,8 @@ func TestNewApp(t *testing.T) {
 func TestNewModule(t *testing.T) {
 	newModule("user")
 }
+
+
+func TestAddPackage(t *testing.T) {
+	addPkg("example","fwhezfwhez", "master")
+}

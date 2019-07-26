@@ -7,10 +7,13 @@ import (
 )
 
 func TestFormatPath(t *testing.T) {
+	fmt.Println(os.Getenv("pkg_path"))
+}
 
-	dr, _ := os.Getwd()
+func TestRmAttach(t *testing.T) {
+	fmt.Println(rmAttach([]string{"pjx", "use", "hello", "-o", "hello2"}))
+}
 
-	fmt.Println(dr)
-	fmt.Println(FormatPath(dr))
-	fmt.Println(FormatPath("/xx/h\\yu\\jk"))
+func TestDelDir(t *testing.T) {
+	DelDir("G:\\go_workspace\\GOPATH\\src\\pjx\\hello")
 }

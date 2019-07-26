@@ -1,7 +1,122 @@
 package main
 
-import "strings"
+import (
+	"os"
+	"os/exec"
+	"runtime"
+	"strings"
+)
 
+// format path, different between windows and linux/mac
 func FormatPath(s string) string {
-	return strings.Replace(s, "\\", "/", -1)
+	switch runtime.GOOS {
+	case "windows":
+		return strings.Replace(s, "/", "\\", -1)
+		//return strings.Replace(s, , "/", -1)
+	case "darwin", "linux":
+		return strings.Replace(s, "\\", "/", -1)
+	default:
+		logger.Println("only support linux,windows,darwin, but os is " + runtime.GOOS)
+		return s
+	}
+}
+
+// copy folder from src to dest
+func CopyDir(src string, dest string) {
+	src = FormatPath(src)
+	dest = FormatPath(dest)
+
+	if IfLog(os.Args) {
+		logger.Println("src:", src)
+		logger.Println("dest:", dest)
+	}
+
+	var cmd *exec.Cmd
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("xcopy", src, dest, "/I", "/E")
+		if pj.IfLog {
+			logger.Println("exec `xcopy " + src + " " + dest + " " + "/I" + " " + "/E`")
+
+		}
+	case "darwin", "linux":
+		cmd = exec.Command("cp", "-R", src, dest)
+		if pj.IfLog {
+			logger.Println("exec `cp -R " + src + " " + dest + "`")
+		}
+	}
+
+	outPut, e := cmd.Output()
+	if e != nil {
+		logger.Println(e.Error())
+		return
+	}
+	if pj.IfLog {
+		logger.Println(string(outPut))
+	}
+}
+
+func DelDir(src string) {
+	src = FormatPath(src)
+	switch runtime.GOOS {
+	case "windows":
+		os.RemoveAll(src)
+		//cmdStr := fmt.Sprintf(`rd /s /q %s` , SingleRightDownPath(src))
+		//logger.Println(SingleRightDownPath(src))
+		//cmdList := strings.Split(cmdStr, " ")
+		//cmd = exec.Command(cmdList[0], cmdList[1:]...)
+		//fmt.Println("exec `rd" + " /s " + "/q " + src + "`")
+	case "darwin", "linux":
+		//cmd = exec.Command("rm", "-rf", src)
+		////cmd = exec.Command("sudo rm", "-rf", src)
+		//fmt.Println("sudo exec `rm -rf " + src)
+		//outPut, e := cmd.Output()
+		//if e != nil {
+		//	logger.Println(e.Error())
+		//	return
+		//}
+		//logger.Println(string(outPut))
+		os.RemoveAll(src)
+	}
+
+}
+
+// check os.Args contains -f or not
+func IfForce(Arg []string) bool {
+	for _, v := range Arg {
+		if v == "-f" || v == "-F" || v == "--force" || v == "--Force" {
+			return true
+		}
+	}
+	return false
+}
+
+func IfLog(Arg []string) bool {
+	for _, v := range Arg {
+		if v == "-l" || v == "-L" || v == "--log" || v == "--Log" {
+			return true
+		}
+	}
+	return false
+}
+
+// rm arg with - or -- prefix
+// when meet specific value lime -o, it will save key'o' and its value into kv map as part of return.
+func rmAttach(arr []string) ([]string, map[string]string) {
+	var newArr = make([]string, 0, 10)
+	var kv = make(map[string]string, 0)
+	for i := 0; i < len(arr); i++ {
+		v := arr[i]
+		if strings.HasPrefix(v, "-") || strings.HasPrefix(v, "--") {
+			if v == "-o" {
+				i += 1
+				kv["o"] = arr[i]
+			}
+			continue
+		} else {
+			newArr = append(newArr, v)
+		}
+	}
+	return newArr, kv
 }
