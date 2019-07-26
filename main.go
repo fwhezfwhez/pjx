@@ -11,51 +11,84 @@ import (
 var pj Pjx
 
 func main() {
-	fmt.Println(1)
-	//// set pj gomodule
-	//flag.BoolVar(&pj.GOModule, "gomodule", false, "pjx -gomodule true")
-	//flag.Parse()
-	//// set appPath
-	//var e error
-	//pj.AppPath, e = os.Getwd()
-	//if e != nil {
-	//	panic(e)
-	//}
-	//
-	//args := os.Args[1:]
-	//
-	//switch args[0] {
-	//case "version", "--version":
-	//	fmt.Println(pj.Version())
-	//case "help", "--help":
-	//	fmt.Println(pj.Usage())
-	//case "new":
-	//	appName := args[1]
-	//	newApp(appName)
-	//case "module":
-	//	moduleName := args[1]
-	//	newModule(moduleName)
-	//case "add":
-	//	// pjx add db fwhezfwhez master
-	//	// pjx add db [global master]
-	//	directoryName := args[1]
-	//	var namespace string
-	//	var tag string
-	//	switch len(args) {
-	//	// pjx add db fwhezfwhez master
-	//	case 4:
-	//		namespace = args[2]
-	//		tag = args[3]
-	//	case 2:
-	//		namespace = "global"
-	//		tag = "master"
-	//	default:
-	//		fmt.Println(fmt.Sprintf("bad args num,want 'pjx add <pkgName> [namespace] [tagName]' but got '%s'", strings.Join(os.Args, " ")))
-	//		return
-	//	}
-	//	addPkg(directoryName, namespace, tag)
-	//}
+	Cmd()
+}
 
+func Cmd() {
+	// set pj gomodule
+	//flag.BoolVar(&pj.GOModule, "gomodule", false, "pjx -gomodule true")
+	//flag.StringVar(&pj.O, "o", "", "-o rename")
+	//flag.Parse()
+	//fmt.Println(pj.O)
+	// set pj properties
+	var e error
+	pj.AppPath, e = os.Getwd()
+	if e != nil {
+		panic(e)
+	}
+	pj.IfLog = IfLog(os.Args)
+	pj.IfForce = IfForce(os.Args)
+
+	args, kv := rmAttach(os.Args[1:])
+
+	pj.O = kv["o"]
+
+	switch args[0] {
+	case "version", "--version":
+		fmt.Println(pj.Version())
+	case "help", "--help":
+		fmt.Println(pj.Usage())
+	case "new":
+		appName := args[1]
+		newApp(appName)
+	case "module":
+		moduleName := args[1]
+		newModule(moduleName)
+	case "add":
+		func() {
+			// pjx add db fwhezfwhez master
+			// pjx add db [global master]
+			directoryName := args[1]
+			var namespace string
+			var tag string
+			switch len(args) {
+			// pjx add db fwhezfwhez master
+			case 4:
+				namespace = args[2]
+				tag = args[3]
+			case 2:
+				namespace = "global"
+				tag = "master"
+			default:
+				fmt.Println(fmt.Sprintf("bad args num,want 'pjx add <pkgName> [namespace] [tagName]' but got '%s'", strings.Join(os.Args, " ")))
+				return
+			}
+			addPkg(directoryName, namespace, tag)
+		}()
+	case "use":
+		func() {
+			// pjx use db fwhezfwhez master
+			// pjx use db [global master]
+			directoryName := args[1]
+			var namespace string
+			var tag string
+			args, _ = rmAttach(args)
+
+			switch len(args) {
+			// pjx add db fwhezfwhez master
+			case 4:
+				namespace = args[2]
+				tag = args[3]
+			case 2:
+				namespace = "global"
+				tag = "master"
+			default:
+				logger.Println(fmt.Sprintf("bad args num,want 'pjx use <pkgName> [namespace] [tagName]' but got '%s'", strings.Join(os.Args, " ")))
+				return
+			}
+			usePkg(directoryName, namespace, tag)
+		}()
+	}
 }
 
 func newApp(appName string) {
@@ -170,6 +203,8 @@ func addPkg(directoryName string, namespace string, tag string) {
 	if e != nil {
 		panic(e)
 	}
+
+	// pkg dir should exist and is not a file
 	dirPath := FormatPath(path.Join(execDir, directoryName))
 	fileInfo, e := os.Stat(dirPath)
 	if e != nil {
@@ -184,30 +219,115 @@ func addPkg(directoryName string, namespace string, tag string) {
 		return
 	}
 
+	// pjx_path should be a dir and well set in os env and the dir path exist
 	pjxPath := os.Getenv("pjx_path")
 	if pjxPath == "" {
 		logger.Println(fmt.Sprintf("pkgPath not found in path, make sure it's well in system env."))
 		return
 	}
-	fileInfo, e = os.Stat(dirPath)
+	fileInfo, e = os.Stat(pjxPath)
+	if e != nil {
+		if os.IsNotExist(e) {
+			logger.Println(fmt.Sprintf("pjx_path dir not exists, '%s' not exist", pjxPath))
+			return
+		}
+		panic(e)
+	}
+
 	if !fileInfo.IsDir() {
 		logger.Println(fmt.Sprintf("pjx_path is not a  directory, '%s' is not a directory", pjxPath))
 		return
 	}
 
+	// check lib exist or not
+	var libPath string
 	if tag == "master" {
-		copyDir(dirPath, FormatPath(path.Join(pjxPath, namespace, directoryName)))
+		libPath = path.Join(pjxPath, namespace, directoryName)
 	} else {
-		copyDir(dirPath, FormatPath(path.Join(pjxPath, namespace, directoryName+"@"+tag)))
+		libPath = path.Join(pjxPath, namespace, directoryName+"@"+tag)
 	}
-    return
+	fileInfo, e = os.Stat(FormatPath(libPath))
+	if e == nil {
+		// exist
+		// if `--force` or `-f`, delete old existing folder.
+		if IfForce(os.Args) {
+			DelDir(libPath)
+		} else {
+			logger.Println(fmt.Sprintf("lib folder '%s' already exist no need to add. Or you can add '-f' to forcely add one.The old one will be replaced", FormatPath(libPath)))
+			return
+		}
+	} else {
+		if os.IsNotExist(e) {
+			// do nothing when not exist
+		} else {
+			// panic if meet unexpected error
+			panic(e)
+		}
+	}
+
+	// when tag is master, folder name is itself, or folder name will suffixed by '@tag'
+	CopyDir(dirPath, FormatPath(libPath))
+
+	return
 }
 
-// sync all pkg and pjx.json in os env 'pjx_path'.
-func syncAll() {
+func usePkg(directoryName string, namespace string, tag string) {
+	var addedDirectoryName string
+	if pj.O != "" {
+		addedDirectoryName = pj.O
+	} else {
+		addedDirectoryName = directoryName
+	}
 
-}
+	execDir, e := os.Getwd()
+	if e != nil {
+		panic(e)
+	}
+	dirPath := FormatPath(path.Join(execDir, addedDirectoryName))
+	fileInfo, e := os.Stat(dirPath)
 
-// sync one pkg and pjx.json in os env 'pjx_path'.
-func syncOne() {
+	if e == nil {
+		logger.Println(fmt.Sprintf("pkg exists, '%s' already exist", dirPath))
+		return
+	}
+
+	pjxPath := os.Getenv("pjx_path")
+	if pjxPath == "" {
+		logger.Println(fmt.Sprintf("pkgPath not found in path, make sure it's well in system env."))
+		return
+	}
+
+	fileInfo, e = os.Stat(pjxPath)
+	if e != nil {
+		if os.IsNotExist(e) {
+			logger.Println(fmt.Sprintf("pjx_path dir not exist, '%s' not exist", pjxPath))
+			return
+		}
+		panic(e)
+	}
+
+	if !fileInfo.IsDir() {
+		logger.Println(fmt.Sprintf("pjx_path is not a  directory, '%s' is not a directory", pjxPath))
+		return
+	}
+
+	// check lib has this folder or not
+	var libPath string
+	if tag == "master" {
+		libPath = path.Join(pjxPath, namespace, directoryName)
+	} else {
+		libPath = path.Join(pjxPath, namespace, directoryName+"@"+tag)
+	}
+	fileInfo, e = os.Stat(FormatPath(libPath))
+
+	if e != nil {
+		if os.IsNotExist(e) {
+			logger.Println(fmt.Sprintf("pjx_path not found folder '%s'", libPath))
+			return
+		}
+		panic(e)
+	}
+
+	CopyDir(libPath, dirPath)
+	return
 }

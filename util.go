@@ -1,101 +1,122 @@
 package main
 
 import (
-	"fmt"
-	"io"
 	"os"
-	"path/filepath"
+	"os/exec"
+	"runtime"
 	"strings"
 )
 
+// format path, different between windows and linux/mac
 func FormatPath(s string) string {
-	return strings.Replace(s, "\\", "/", -1)
+	switch runtime.GOOS {
+	case "windows":
+		return strings.Replace(s, "/", "\\", -1)
+		//return strings.Replace(s, , "/", -1)
+	case "darwin", "linux":
+		return strings.Replace(s, "\\", "/", -1)
+	default:
+		logger.Println("only support linux,windows,darwin, but os is " + runtime.GOOS)
+		return s
+	}
 }
 
-func copyDir(src string, dest string) {
-	src_original := src
-	err := filepath.Walk(src, func(src string, f os.FileInfo, err error) error {
-		if f == nil {
-			return err
+// copy folder from src to dest
+func CopyDir(src string, dest string) {
+	src = FormatPath(src)
+	dest = FormatPath(dest)
+
+	if IfLog(os.Args) {
+		logger.Println("src:", src)
+		logger.Println("dest:", dest)
+	}
+
+	var cmd *exec.Cmd
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("xcopy", src, dest, "/I", "/E")
+		if pj.IfLog {
+			logger.Println("exec `xcopy " + src + " " + dest + " " + "/I" + " " + "/E`")
+
 		}
-		if f.IsDir() {
-			//			fmt.Println(f.Name())
-			//			copyDir(f.Name(), dest+"/"+f.Name())
+	case "darwin", "linux":
+		cmd = exec.Command("cp", "-R", src, dest)
+		if pj.IfLog {
+			logger.Println("exec `cp -R " + src + " " + dest + "`")
+		}
+	}
+
+	outPut, e := cmd.Output()
+	if e != nil {
+		logger.Println(e.Error())
+		return
+	}
+	if pj.IfLog {
+		logger.Println(string(outPut))
+	}
+}
+
+func DelDir(src string) {
+	src = FormatPath(src)
+	switch runtime.GOOS {
+	case "windows":
+		os.RemoveAll(src)
+		//cmdStr := fmt.Sprintf(`rd /s /q %s` , SingleRightDownPath(src))
+		//logger.Println(SingleRightDownPath(src))
+		//cmdList := strings.Split(cmdStr, " ")
+		//cmd = exec.Command(cmdList[0], cmdList[1:]...)
+		//fmt.Println("exec `rd" + " /s " + "/q " + src + "`")
+	case "darwin", "linux":
+		//cmd = exec.Command("rm", "-rf", src)
+		////cmd = exec.Command("sudo rm", "-rf", src)
+		//fmt.Println("sudo exec `rm -rf " + src)
+		//outPut, e := cmd.Output()
+		//if e != nil {
+		//	logger.Println(e.Error())
+		//	return
+		//}
+		//logger.Println(string(outPut))
+		os.RemoveAll(src)
+	}
+
+}
+
+// check os.Args contains -f or not
+func IfForce(Arg []string) bool {
+	for _, v := range Arg {
+		if v == "-f" || v == "-F" || v == "--force" || v == "--Force" {
+			return true
+		}
+	}
+	return false
+}
+
+func IfLog(Arg []string) bool {
+	for _, v := range Arg {
+		if v == "-l" || v == "-L" || v == "--log" || v == "--Log" {
+			return true
+		}
+	}
+	return false
+}
+
+// rm arg with - or -- prefix
+// when meet specific value lime -o, it will save key'o' and its value into kv map as part of return.
+func rmAttach(arr []string) ([]string, map[string]string) {
+	var newArr = make([]string, 0, 10)
+	var kv = make(map[string]string, 0)
+	for i := 0; i < len(arr); i++ {
+		v := arr[i]
+		if strings.HasPrefix(v, "-") || strings.HasPrefix(v, "--") {
+			if v == "-o" {
+				i += 1
+				kv["o"] = arr[i]
+			}
+			continue
 		} else {
-			//fmt.Println(src)
-			//fmt.Println(src_original)
-			//fmt.Println(dest)
-
-			dest_new := strings.Replace(src, src_original, dest, -1)
-			//fmt.Println(dest_new)
-			//fmt.Println("CopyFile:" + src + " to " + dest_new)
-			CopyFile(src, dest_new)
-		}
-		//println(path)
-		return nil
-	})
-	if err != nil {
-		fmt.Printf("filepath.Walk() returned %v\n", err)
-	}
-}
-
-//egodic directories
-func getFilelist(path string) {
-	err := filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
-		if f == nil {
-			return err
-		}
-		if f.IsDir() {
-			return nil
-		}
-		//println(path)
-		return nil
-	})
-	if err != nil {
-		fmt.Printf("filepath.Walk() returned %v\n", err)
-	}
-}
-func PathExists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
-}
-
-//copy file
-func CopyFile(src, dst string) (w int64, err error) {
-	srcFile, err := os.Open(src)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	defer srcFile.Close()
-	dst_slices := strings.Split(dst, "\\")
-	dst_slices_len := len(dst_slices)
-	dest_dir := ""
-	for i := 0; i < dst_slices_len-1; i++ {
-		dest_dir = dest_dir + dst_slices[i] + "\\"
-	}
-
-	b, err := PathExists(dest_dir)
-	if b == false {
-		err := os.Mkdir(dest_dir, os.ModePerm) //在当前目录下生成md目录
-		if err != nil {
-			fmt.Println(err)
+			newArr = append(newArr, v)
 		}
 	}
-	dstFile, err := os.Create(dst)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	defer dstFile.Close()
-
-	return io.Copy(dstFile, srcFile)
+	return newArr, kv
 }

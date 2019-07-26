@@ -19,11 +19,9 @@ func init() {
 
 	Cfg = viper.New()
 
-	Cfg.SetConfigFile("G:/go_workspace/GOPATH/src/pjx/helloworld/config/local.yaml")
+	Cfg.SetConfigFile("G:/go_workspace/GOPATH/src/pjx/hello/config/local.yaml")
 	if e = Cfg.ReadInConfig(); e != nil {
 		panic(e)
 	}
 	fmt.Println(Cfg.GetString("version"))
-	Cfg.Set("name","ft")
-	Cfg.WriteConfig()
 }
