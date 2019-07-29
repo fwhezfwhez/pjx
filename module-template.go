@@ -2,7 +2,7 @@ package  main
 
 var moduleTmplMap = map[string]string{
 	"default": moduleTmpl,
-    "test": moduleTmpl2,
+    "test": test,
 }
 
 var moduleTmpl = `
@@ -20,7 +20,7 @@ dirList:
 - '{$object}TestClient'
 `
 
-var moduleTmpl2 = `
+var test = `
 package: empty
 dirList:
 - '{$object}Service'

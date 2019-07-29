@@ -140,7 +140,14 @@ Take helloworld for example:
 
 ## FAQ
 
-- pjx command not found?
+**pjx command not found?**
 
 `go get -u ...` or `go install` will put `pjx` execute file into ${GOPATH}/bin. Make sure your ${GOPATH}/bin is in your system path.
 
+**How to design module directories as wanted?**
+If you don't like `xRouter`, `xService`... this kind of directories, you can just modify `module-template.go`.By default, there is two keys `default` and `test` to refer the template.Pjx will choose as below:
+
+- `pjx module user`   using default key,and generate xRouter,xService,xModel,xPb,xTestClient,xExport
+- `pjx module user -m test` using test key, and generate xModel,xService,xRouter.
+
+**After you modify module-template.go, don't forget to run `go install` to refresh pjx command**
