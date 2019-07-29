@@ -8,6 +8,11 @@ import (
 type Pjx struct {
 	GOModule bool
 	AppPath  string
+
+	// store args with value like -o xxx, -m xxx
+	KV map[string]string
+
+	// receive -l
 	IfLog    bool
 	IfForce  bool
 
@@ -17,7 +22,7 @@ type Pjx struct {
 }
 
 func (p *Pjx) Version() string {
-	return "v2.0.0"
+	return "v2.0.1"
 }
 func (p *Pjx) Usage() string {
 	var usages = []string{

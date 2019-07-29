@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/exec"
+	"path"
 	"runtime"
 	"strings"
 )
@@ -101,6 +102,17 @@ func IfLog(Arg []string) bool {
 	return false
 }
 
+func PathJoin(args ...string) string {
+	var tmp = make([]string, 0, 10)
+	for _, v := range args {
+		if v == "nil" || v == "empty" || v == "" {
+			continue
+		}
+		tmp = append(tmp, v)
+	}
+	return path.Join(tmp...)
+}
+
 // rm arg with - or -- prefix
 // when meet specific value lime -o, it will save key'o' and its value into kv map as part of return.
 func rmAttach(arr []string) ([]string, map[string]string) {
@@ -112,6 +124,12 @@ func rmAttach(arr []string) ([]string, map[string]string) {
 			if v == "-o" {
 				i += 1
 				kv["o"] = arr[i]
+				continue
+			}
+			if v == "-m" {
+				i+=1
+				kv["m"] = arr[i]
+				continue
 			}
 			continue
 		} else {

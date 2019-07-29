@@ -17,3 +17,7 @@ func TestRmAttach(t *testing.T) {
 func TestDelDir(t *testing.T) {
 	DelDir("G:\\go_workspace\\GOPATH\\src\\pjx\\hello")
 }
+
+func TestPathJoin(t *testing.T) {
+	fmt.Println(PathJoin([]string{"1","empty","2"}...))
+}

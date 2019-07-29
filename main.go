@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"os"
 	"path"
 	"runtime/debug"
@@ -24,7 +25,7 @@ func Cmd() {
 	pj.IfForce = IfForce(os.Args)
 
 	args, kv := rmAttach(os.Args[1:])
-
+	pj.KV = kv
 	pj.O = kv["o"]
 
 	switch args[0] {
@@ -159,37 +160,59 @@ func newApp(appName string) {
 }
 
 func newModule(moduleName string) {
-	if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName), os.ModePerm); e != nil {
+	var tmpl struct {
+		Package string   `yaml:"package"`
+		DirList []string `yaml:"dirList"`
+	}
+	var tmplKey = "default"
+	var m = pj.KV["m"]
+	if m != "" {
+		if moduleTmplMap[m] != "" {
+			tmplKey = m
+		}
+	}
+	e := yaml.Unmarshal([]byte(moduleTmplMap[tmplKey]), &tmpl)
+	if e != nil {
+		panic(e)
+	}
+
+	if e := os.Mkdir(PathJoin(pj.AppPath, tmpl.Package, moduleName), os.ModePerm); e != nil {
 		fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
 		return
 	}
 
-	if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "Pb")), os.ModePerm); e != nil {
-		fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
-		return
+	for _, v := range tmpl.DirList {
+		if e := os.Mkdir(PathJoin(pj.AppPath, tmpl.Package, moduleName, strings.Replace(v, "{$object}", moduleName, -1)), os.ModePerm); e != nil {
+			fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+			return
+		}
 	}
-	if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "Model")), os.ModePerm); e != nil {
-		fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
-		return
-	}
-	if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "Router")), os.ModePerm); e != nil {
-		fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
-		return
-	}
-	if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "Service")), os.ModePerm); e != nil {
-		fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
-		return
-	}
-
-	if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "TestClient")), os.ModePerm); e != nil {
-		fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
-		return
-	}
-
-	if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "Export")), os.ModePerm); e != nil {
-		fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
-		return
-	}
+	//if e := os.Mkdir(PathJoin(pj.AppPath, tmpl.Package, moduleName, fmt.Sprintf("%s%s", moduleName, "Pb")), os.ModePerm); e != nil {
+	//	fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+	//	return
+	//}
+	//if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "Model")), os.ModePerm); e != nil {
+	//	fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+	//	return
+	//}
+	//if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "Router")), os.ModePerm); e != nil {
+	//	fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+	//	return
+	//}
+	//if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "Service")), os.ModePerm); e != nil {
+	//	fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+	//	return
+	//}
+	//
+	//if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "TestClient")), os.ModePerm); e != nil {
+	//	fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+	//	return
+	//}
+	//
+	//if e := os.Mkdir(path.Join(pj.AppPath, "module", moduleName, fmt.Sprintf("%s%s", moduleName, "Export")), os.ModePerm); e != nil {
+	//	fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+	//	return
+	//}
 }
 
 func addPkg(directoryName string, namespace string, tag string) {

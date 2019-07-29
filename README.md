@@ -9,6 +9,7 @@ pjx is a tool helps auto-generate server side directories and some go code.
 - [2. Module](#2-module)
     - [2.1 Directory generate](#21-directory-generate)
     - [2.2 Package storage and migration](#22-package-storage-and-migration)
+- [3. Optional args](#3-optional-args)
 - [FAQ](#faq)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -127,6 +128,15 @@ Take helloworld for example:
 `pjx use <packageName> [:namespace] [:tag] [-o :rename]` it will insert a package from repo into current dir.Optional args:
 
 - `-o` add package with another name.
+
+## 3. Optional args
+
+| value | meaning | example | why |
+| ---- | ---- | ---- | --- |
+| -l | open log | pjx add xxx -l | show log |
+| -f | add package by force | pjx add xxx -f | avoid package exist error |
+| -o | use package in another name | pjx use xxx -o xxx2 | avoid package exist error|
+| -m | choose module template,it's at 'pjx/module-template.go' | pjx module user -m test| to design module directories as wanted |
 
 ## FAQ
 
