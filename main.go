@@ -39,6 +39,7 @@ func Cmd() {
 	case "module":
 		moduleName := args[1]
 		newModule(moduleName)
+
 	case "add":
 		func() {
 			// pjx add db fwhezfwhez master
@@ -281,6 +282,18 @@ func addPkg(directoryName string, namespace string, tag string) {
 			panic(e)
 		}
 	}
+	// prepare namespace
+	fileInfo, e = os.Stat(FormatPath(PathJoin(pjxPath, namespace)))
+	if e!=nil {
+        if os.IsNotExist(e) {
+        	// create when not exist
+        	if e:=os.Mkdir(PathJoin(pjxPath, namespace), os.ModePerm);e!=nil {
+				fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+                return
+			}
+		}
+	}
+
 
 	// when tag is master, folder name is itself, or folder name will suffixed by '@tag'
 	CopyDir(dirPath, FormatPath(libPath))

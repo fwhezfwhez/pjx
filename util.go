@@ -110,7 +110,7 @@ func PathJoin(args ...string) string {
 		}
 		tmp = append(tmp, v)
 	}
-	return path.Join(tmp...)
+	return FormatPath(path.Join(tmp...))
 }
 
 // rm arg with - or -- prefix
