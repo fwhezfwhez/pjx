@@ -10,7 +10,9 @@ pjx is a tool helps auto-generate server side directories and some go code.
     - [2.1 Directory generate](#21-directory-generate)
     - [2.2 Package storage and migration](#22-package-storage-and-migration)
 - [3. Optional args](#3-optional-args)
-- [FAQ](#faq)
+- [4. FAQ](#4-faq)
+    - [4.1. pjx command not found?**](#41-pjx-command-not-found)
+    - [4.2. How to design module directories as wanted?**](#42-how-to-design-module-directories-as-wanted)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -97,6 +99,8 @@ Commands are below:
 - pjx new appName
 - pjx module moduleName
 
+**Design your own directories refers to [4.2. How to design module directories as wanted?**](#42-how-to-design-module-directories-as-wanted)**
+
 `// - pjx test-client functionName [--http] [--tcp] [--grpc]`
 
 #### 2.2 Package storage and migration
@@ -115,7 +119,7 @@ Take helloworld for example:
 </p>
 
 
-**Make sure configure system env `pjx_path`.This will let pjx know where to storage package locally**
+**Make sure configure system env `pjx_path`.This will let pjx know where to storage package locally.If not well set, it still work and will save packages in user-home/pjx_path**
 
 `add` and `use` keyword ruled below:
 
@@ -138,13 +142,13 @@ Take helloworld for example:
 | -o | use package in another name | pjx use xxx -o xxx2 | avoid package exist error|
 | -m | choose module template,it's at 'pjx/module-template.go' | pjx module user -m test| to design module directories as wanted |
 
-## FAQ
+## 4. FAQ
 
-**pjx command not found?**
+#### 4.1. pjx command not found?**
 
 `go get -u ...` or `go install` will put `pjx` execute file into ${GOPATH}/bin. Make sure your ${GOPATH}/bin is in your system path.
 
-**How to design module directories as wanted?**
+#### 4.2. How to design module directories as wanted?**
 
 If you don't like `xRouter`, `xService`... this kind of directories, you can just modify `module-template.go`.By default, there is two keys `default` and `test` to refer the template.Pjx will choose as below:
 
