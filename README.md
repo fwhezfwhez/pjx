@@ -14,7 +14,17 @@ pjx is a tool helps auto-generate server side directories and some go code.
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## 1. Start
-`go get -u github.com/fwhezfwhez/pjx`
+
+way 1:
+
+- `go get -u github.com/fwhezfwhez/pjx`
+
+way 2:
+
+- `git clone https://github.com/fwhezfwhez/pjx.git`
+- `cd pjx`
+- `go install`
+
 
 Make sure in cmd type `pjx --version`, output normal.
 
