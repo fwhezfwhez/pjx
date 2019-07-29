@@ -145,6 +145,7 @@ Take helloworld for example:
 `go get -u ...` or `go install` will put `pjx` execute file into ${GOPATH}/bin. Make sure your ${GOPATH}/bin is in your system path.
 
 **How to design module directories as wanted?**
+
 If you don't like `xRouter`, `xService`... this kind of directories, you can just modify `module-template.go`.By default, there is two keys `default` and `test` to refer the template.Pjx will choose as below:
 
 - `pjx module user`   using default key,and generate xRouter,xService,xModel,xPb,xTestClient,xExport
