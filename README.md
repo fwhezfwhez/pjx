@@ -131,5 +131,6 @@ Take helloworld for example:
 ## FAQ
 
 - pjx command not found?
+
 `go get -u ...` or `go install` will put `pjx` execute file into ${GOPATH}/bin. Make sure your ${GOPATH}/bin is in your system path.
 
