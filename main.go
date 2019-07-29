@@ -15,12 +15,6 @@ func main() {
 }
 
 func Cmd() {
-	// set pj gomodule
-	//flag.BoolVar(&pj.GOModule, "gomodule", false, "pjx -gomodule true")
-	//flag.StringVar(&pj.O, "o", "", "-o rename")
-	//flag.Parse()
-	//fmt.Println(pj.O)
-	// set pj properties
 	var e error
 	pj.AppPath, e = os.Getwd()
 	if e != nil {
