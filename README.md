@@ -8,9 +8,8 @@ pjx is a tool helps auto-generate server side directories and some go code.
 - [pjx](#pjx)
 - [1. Start](#1-start)
 - [2. Module](#2-module)
-    - [2.1 directory generate](#21-directory-generate)
-    - [module](#module)
-    - [2.2 package storage and migration](#22-package-storage-and-migration)
+    - [2.1 Directory generate](#21-Directory-generate)
+    - [2.2 Package storage and migration](#22-Package-storage-and-migration)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -22,7 +21,7 @@ Make sure in cmd type `pjx --version`, output normal.
 ## 2. Module
 pjx now provides functional flows below:
 
-#### 2.1 directory generate
+#### 2.1 Directory generate
 For developing golang server project, pjx can auto-generate projects.
 
 Take helloWorld project for example:
@@ -89,7 +88,7 @@ Commands are below:
 
 `// - pjx test-client functionName [--http] [--tcp] [--grpc]`
 
-#### 2.2 package storage and migration
+#### 2.2 Package storage and migration
 **Make sure configure system env `pjx_path`.This will let pjx know where to storage package locally**
 
 For storing and migrating local package, pjx provides commands below:
