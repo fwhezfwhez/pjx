@@ -11,7 +11,7 @@ pjx is a tool helps auto-generate server side directories and some go code.
     - [2.2 Package storage and migration](#22-package-storage-and-migration)
 - [3. Optional args](#3-optional-args)
 - [4. FAQ](#4-faq)
-    - [4.1. pjx command not found?**](#41-pjx-command-not-found)
+    - [4.1. pjx command not found?](#41-pjx-command-not-found)
     - [4.2. How to design module directories as wanted?](#42-how-to-design-module-directories-as-wanted)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
