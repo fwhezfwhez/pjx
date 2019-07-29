@@ -57,7 +57,8 @@ What are they?
 - independence: packages or files of common util tool. These pkg and files will not import any of this project.It can be no-harm add, remove, reuse-copy.
 - main.go: project entrance.
 
-#### module
+**module**
+
 Module divides project into modules such as `user`, `shop`.Its generated directories will look like:
 ```txt
 module
