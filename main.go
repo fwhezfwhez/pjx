@@ -239,7 +239,7 @@ func addPkg(directoryName string, namespace string, tag string) {
 	// pjx_path should be a dir and well set in os env and the dir path exist
 	pjxPath := os.Getenv("pjx_path")
 	if pjxPath == "" {
-		logger.Println(fmt.Sprintf("pkgPath not found in path, make sure it's well in system env."))
+		logger.Println(fmt.Sprintf("pjxPath not found in path, make sure it's well in system env."))
 		return
 	}
 	fileInfo, e = os.Stat(pjxPath)

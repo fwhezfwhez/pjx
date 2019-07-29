@@ -9,11 +9,12 @@ type Pjx struct {
 	GOModule bool
 	AppPath  string
 
-	// store args with value like -o xxx, -m xxx
+	// receive args with value like -o xxx, -m xxx
 	KV map[string]string
 
-	// receive -l
+	// receive -l, whether open log
 	IfLog    bool
+	// receive -f, whether do command by force
 	IfForce  bool
 
 	// receive -o flag, in different command, it refers to different meaning, like pjx use db -o db2,
