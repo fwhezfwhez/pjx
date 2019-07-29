@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/exec"
+	"os/user"
 	"path"
 	"runtime"
 	"strings"
@@ -127,7 +128,7 @@ func rmAttach(arr []string) ([]string, map[string]string) {
 				continue
 			}
 			if v == "-m" {
-				i+=1
+				i += 1
 				kv["m"] = arr[i]
 				continue
 			}
@@ -137,4 +138,35 @@ func rmAttach(arr []string) ([]string, map[string]string) {
 		}
 	}
 	return newArr, kv
+}
+
+// This is temporary value, as soon as process stops, env loses its effect.
+func SetPjxEnv() {
+	if os.Getenv("pjx_path") != "" {
+		logger.Println("pjx_path already exist, no need to set again")
+		return
+	}
+
+	var key = "pjx_path"
+	var value string
+	usInfo, e := user.Current()
+	if e != nil {
+		panic(e)
+	}
+	value = PathJoin(usInfo.HomeDir, "pjx_path")
+	_, e = os.Stat(value)
+	if e != nil {
+		if os.IsNotExist(e) {
+			if e := os.Mkdir(value, os.ModePerm); e != nil {
+				logger.Println(e.Error())
+				return
+			}
+		} else {
+			panic(e)
+		}
+	}
+
+	if e := os.Setenv(key, value); e != nil {
+		panic(e)
+	}
 }

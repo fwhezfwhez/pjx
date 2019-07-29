@@ -21,3 +21,8 @@ func TestDelDir(t *testing.T) {
 func TestPathJoin(t *testing.T) {
 	fmt.Println(PathJoin([]string{"1","empty","2"}...))
 }
+
+func TestSetPjxEnv(t *testing.T) {
+	SetPjxEnv()
+	fmt.Println(os.Getenv("pjx_path"))
+}

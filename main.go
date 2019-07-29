@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"os"
+	"os/user"
 	"path"
 	"runtime/debug"
 	"strings"
@@ -11,6 +12,18 @@ import (
 
 var pj Pjx
 
+func init() {
+	if os.Getenv("pjx_path") == "" {
+		us, e := user.Current()
+		if e != nil {
+			panic(e)
+		}
+		if IfLog(os.Args) {
+			logger.Println(fmt.Sprintf("pjx_path not found, pjx has auto use its process-scope env '%s', it will not effect your system env setting.But it's advised to set 'pjx_path' properly to let pjx know where to put packages locally.", PathJoin(us.HomeDir, "pjx_path")))
+		}
+		SetPjxEnv()
+	}
+}
 func main() {
 	Cmd()
 }
@@ -284,16 +297,15 @@ func addPkg(directoryName string, namespace string, tag string) {
 	}
 	// prepare namespace
 	fileInfo, e = os.Stat(FormatPath(PathJoin(pjxPath, namespace)))
-	if e!=nil {
-        if os.IsNotExist(e) {
-        	// create when not exist
-        	if e:=os.Mkdir(PathJoin(pjxPath, namespace), os.ModePerm);e!=nil {
+	if e != nil {
+		if os.IsNotExist(e) {
+			// create when not exist
+			if e := os.Mkdir(PathJoin(pjxPath, namespace), os.ModePerm); e != nil {
 				fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
-                return
+				return
 			}
 		}
 	}
-
 
 	// when tag is master, folder name is itself, or folder name will suffixed by '@tag'
 	CopyDir(dirPath, FormatPath(libPath))
@@ -360,4 +372,27 @@ func usePkg(directoryName string, namespace string, tag string) {
 
 	CopyDir(libPath, dirPath)
 	return
+}
+
+func initEnv() {
+	// pjx_path should be a dir and well set in os env and the dir path exist
+	pjxPath := os.Getenv("pjx_path")
+	if pjxPath == "" {
+		SetPjxEnv()
+		logger.Println(fmt.Sprintf("pjxPath not found in path, the default 'pjx_path' has been set by default, you might need to reopen command windows and type pjx env to see its detail."))
+		return
+	}
+	fileInfo, e := os.Stat(pjxPath)
+	if e != nil {
+		if os.IsNotExist(e) {
+			logger.Println(fmt.Sprintf("pjx_path dir not exists, '%s' not exist", pjxPath))
+			return
+		}
+		panic(e)
+	}
+
+	if !fileInfo.IsDir() {
+		logger.Println(fmt.Sprintf("pjx_path is not a  directory, '%s' is not a directory", pjxPath))
+		return
+	}
 }
