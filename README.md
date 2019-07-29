@@ -5,11 +5,11 @@ pjx is a tool helps auto-generate server side directories and some go code.
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [pjx](#pjx)
 - [1. Start](#1-start)
 - [2. Module](#2-module)
-    - [2.1 Directory generate](#21-Directory-generate)
-    - [2.2 Package storage and migration](#22-Package-storage-and-migration)
+    - [2.1 Directory generate](#21-directory-generate)
+    - [2.2 Package storage and migration](#22-package-storage-and-migration)
+- [FAQ](#faq)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -127,3 +127,9 @@ Take helloworld for example:
 `pjx use <packageName> [:namespace] [:tag] [-o :rename]` it will insert a package from repo into current dir.Optional args:
 
 - `-o` add package with another name.
+
+## FAQ
+
+- pjx command not found?
+`go get -u ...` or `go install` will put `pjx` execute file into ${GOPATH}/bin. Make sure your ${GOPATH}/bin is in your system path.
+
