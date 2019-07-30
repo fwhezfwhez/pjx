@@ -473,7 +473,7 @@ func mergePackage(src string, namespace string) {
 		dest := PathJoin(os.Getenv("pjx_path"), namespace, fi.Name())
 
 		namespacePath := PathJoin(os.Getenv("pjx_path"), namespace)
-		_,e:=os.Stat(namespace)
+		_,e:=os.Stat(namespacePath)
 		if e!=nil {
 			if os.IsNotExist(e) {
 				if e:= os.Mkdir(namespacePath, os.ModePerm);e!=nil {
