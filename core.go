@@ -23,7 +23,7 @@ type Pjx struct {
 }
 
 func (p *Pjx) Version() string {
-	return "v2.0.1"
+	return "v2.0.3"
 }
 func (p *Pjx) Usage() string {
 	var usages = []string{

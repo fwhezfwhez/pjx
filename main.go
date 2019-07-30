@@ -97,6 +97,8 @@ func Cmd() {
 			}
 			usePkg(directoryName, namespace, tag)
 		}()
+	default:
+		fmt.Println(fmt.Sprintf("command '%s' not found",args[0]))
 	}
 }
 
@@ -188,6 +190,18 @@ func newModule(moduleName string) {
 	e := yaml.Unmarshal([]byte(moduleTmplMap[tmplKey]), &tmpl)
 	if e != nil {
 		panic(e)
+	}
+
+	_, e =os.Stat(PathJoin(pj.AppPath, tmpl.Package))
+	if e != nil {
+		if os.IsNotExist(e) {
+			if e:= os.Mkdir(PathJoin(pj.AppPath, tmpl.Package), os.ModePerm);e!=nil {
+				fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+				return
+			}
+		} else{
+			panic(e)
+		}
 	}
 
 	if e := os.Mkdir(PathJoin(pj.AppPath, tmpl.Package, moduleName), os.ModePerm); e != nil {
