@@ -1,5 +1,5 @@
 ## pjx
-pjx is a tool helps auto-generate server side directories and some go code.
+pjx is a tool helps auto-generate server side directories and some go code.Supporting linux, windows, mac.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -156,3 +156,8 @@ If you don't like `xRouter`, `xService`... this kind of directories, you can jus
 - `pjx module user -m test` using test key, and generate xModel,xService,xRouter.
 
 **After you modify module-template.go, don't forget to run `go install` to refresh pjx command**
+<p align="left">
+    <a href="http://i2.tiimg.com/684630/aac5c27572431f5f.gif"><img src="http://i2.tiimg.com/684630/aac5c27572431f5f.gif"></a>
+</p>
+
+
