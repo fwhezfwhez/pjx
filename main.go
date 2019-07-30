@@ -471,6 +471,19 @@ func mergePackage(src string, namespace string) {
 		}
 		src := PathJoin(src, fi.Name())
 		dest := PathJoin(os.Getenv("pjx_path"), namespace, fi.Name())
+
+		namespacePath := PathJoin(os.Getenv("pjx_path"), namespace)
+		_,e:=os.Stat(namespace)
+		if e!=nil {
+			if os.IsNotExist(e) {
+				if e:= os.Mkdir(namespacePath, os.ModePerm);e!=nil {
+					panic(e)
+				}
+			}else{
+				panic(e)
+			}
+		}
+
 		switch state {
 		case 1:
 			CopyDirF(src, dest)
