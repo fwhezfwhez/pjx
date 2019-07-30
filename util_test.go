@@ -26,3 +26,7 @@ func TestSetPjxEnv(t *testing.T) {
 	SetPjxEnv()
 	fmt.Println(os.Getenv("pjx_path"))
 }
+
+func TestCopyDirF(t *testing.T) {
+    // CopyDirU(`G:\go_workspace\GOPATH\src\pjx\helo`, `G:\go_workspace\GOPATH\src\pjx\helo2`)
+}

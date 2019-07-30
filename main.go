@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"os"
+	//"os/exec"
 	"os/user"
 	"path"
 	"runtime/debug"
@@ -42,10 +44,13 @@ func Cmd() {
 	pj.O = kv["o"]
 
 	switch args[0] {
+	// doc
 	case "version", "--version":
 		fmt.Println(pj.Version())
 	case "help", "--help":
 		fmt.Println(pj.Usage())
+
+		// project generate
 	case "new":
 		appName := args[1]
 		newApp(appName)
@@ -53,6 +58,7 @@ func Cmd() {
 		moduleName := args[1]
 		newModule(moduleName)
 
+		// package storage and migration
 	case "add":
 		func() {
 			// pjx add db fwhezfwhez master
@@ -97,8 +103,22 @@ func Cmd() {
 			}
 			usePkg(directoryName, namespace, tag)
 		}()
+	case "merge":
+		// pjx merge $path fwhezfwhez -f, 合并path下所有package进fwhezfwhez空间里，存在命名冲突时，覆盖
+		// pjx merge $path global -u, 合并path下所有package进global里，存在命名冲突时，跳过该包
+
+		src := args[1]
+		namespace := args[2]
+		mergePackage(src, namespace)
+
+	case "clone":
+		// pjx clone github.com/fwhezfwhez/pjx-packages.git fwhefwhez -f  从远程仓库中拉取并合并进fwhezfwhez空间里，命名冲突时，覆盖
+		// pjx clone github.com/fwhezfwhez/pjx-packages.git fwhefwhez -u  从远程仓库中拉取并合并进fwhezfwhez空间里，存在命名冲突时，跳过该包
+		//src := args[1]
+		//namespace := args[2]
+		// cloneFrom(src, namespace)
 	default:
-		fmt.Println(fmt.Sprintf("command '%s' not found",args[0]))
+		fmt.Println(fmt.Sprintf("command '%s' not found", args[0]))
 	}
 }
 
@@ -192,14 +212,14 @@ func newModule(moduleName string) {
 		panic(e)
 	}
 
-	_, e =os.Stat(PathJoin(pj.AppPath, tmpl.Package))
+	_, e = os.Stat(PathJoin(pj.AppPath, tmpl.Package))
 	if e != nil {
 		if os.IsNotExist(e) {
-			if e:= os.Mkdir(PathJoin(pj.AppPath, tmpl.Package), os.ModePerm);e!=nil {
+			if e := os.Mkdir(PathJoin(pj.AppPath, tmpl.Package), os.ModePerm); e != nil {
 				fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
 				return
 			}
-		} else{
+		} else {
 			panic(e)
 		}
 	}
@@ -409,4 +429,56 @@ func initEnv() {
 		logger.Println(fmt.Sprintf("pjx_path is not a  directory, '%s' is not a directory", pjxPath))
 		return
 	}
+}
+
+func mergePackage(src string, namespace string) {
+	if src == "." {
+		var e error
+		src, e = os.Getwd()
+		if e != nil {
+			panic(e)
+		}
+	}
+
+	src = FormatPath(src)
+	var state = 3 // 1. -f , 2. -u , 3. stop when exist error, privilege  -u > -f > null
+	if IfForce(os.Args) {
+		state = 1
+	}
+	if IfU(os.Args) {
+		state = 2
+	}
+	srcInfo, e := os.Stat(src)
+	if e != nil {
+		if os.IsNotExist(e) {
+			logger.Println(fmt.Sprintf("'%s' not found", src))
+			return
+		}
+		panic(e)
+	}
+	if !srcInfo.IsDir() {
+		logger.Println(fmt.Sprintf("'%s' is not dir", src))
+		return
+	}
+
+	rd, e := ioutil.ReadDir(src)
+	if e != nil {
+		panic(e)
+	}
+	for _, fi := range rd {
+		if !fi.IsDir() {
+			continue
+		}
+		src := PathJoin(src, fi.Name())
+		dest := PathJoin(os.Getenv("pjx_path"), namespace, fi.Name())
+		switch state {
+		case 1:
+			CopyDirF(src, dest)
+		case 2:
+			CopyDirU(src, dest)
+		case 3:
+			CopyDir(src, dest)
+		}
+	}
+	return
 }

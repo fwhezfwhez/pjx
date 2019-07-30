@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"os/user"
@@ -27,7 +28,11 @@ func FormatPath(s string) string {
 func CopyDir(src string, dest string) {
 	src = FormatPath(src)
 	dest = FormatPath(dest)
-
+	_, e := os.Stat(dest)
+	if e == nil {
+		logger.Println(fmt.Sprintf("dest '%s' exist, do nothing", dest))
+		return
+	}
 	if IfLog(os.Args) {
 		logger.Println("src:", src)
 		logger.Println("dest:", dest)
@@ -57,6 +62,41 @@ func CopyDir(src string, dest string) {
 	if pj.IfLog {
 		logger.Println(string(outPut))
 	}
+}
+
+// same as copyDir, but will forcely replace the old if dest existed.
+func CopyDirF(src string, dest string) {
+	_, e := os.Stat(dest)
+	if e != nil {
+		if os.IsNotExist(e) {
+			CopyDir(src, dest)
+			return
+		}
+		panic(e)
+	}
+	DelDir(dest)
+	CopyDir(src, dest)
+}
+
+// same as copyDir, but will do nothing if dest exists
+func CopyDirU(src string, dest string) {
+	info, e := os.Stat(dest)
+	if e != nil {
+		if os.IsNotExist(e) {
+			CopyDir(src, dest)
+			return
+		}
+		panic(e)
+	}
+
+	if !info.IsDir() {
+		logger.Println(fmt.Sprintf("dest '%s' is not a dir", dest))
+		return
+	}
+	if IfLog(os.Args) {
+		logger.Println(fmt.Sprintf("dest '%s' exist, do nothing", dest))
+	}
+	return
 }
 
 func DelDir(src string) {
@@ -97,6 +137,15 @@ func IfForce(Arg []string) bool {
 func IfLog(Arg []string) bool {
 	for _, v := range Arg {
 		if v == "-l" || v == "-L" || v == "--log" || v == "--Log" {
+			return true
+		}
+	}
+	return false
+}
+
+func IfU(Arg []string) bool {
+	for _, v := range Arg {
+		if v == "-u" || v == "-U" {
 			return true
 		}
 	}

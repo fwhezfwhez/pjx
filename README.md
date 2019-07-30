@@ -135,12 +135,13 @@ Take helloworld for example:
 
 ## 3. Optional args
 
-| value | meaning | example | why |
-| ---- | ---- | ---- | --- |
-| -l | open log | pjx add xxx -l | show log |
-| -f | add package by force | pjx add xxx -f | avoid package exist error |
-| -o | use package in another name | pjx use xxx -o xxx2 | avoid package exist error|
-| -m | choose module template,it's at 'pjx/module-template.go' | pjx module user -m test| to design module directories as wanted |
+| value | meaning | example | why | scope |
+| ---- | ---- | ---- | --- | ---- |
+| -l | open log | pjx add xxx -l | show log | all |
+| -f | add package by force | pjx add xxx -f | avoid package exist error | add, merge, clone |
+| -o | use package in another name | pjx use xxx -o xxx2 | avoid package exist error| use |
+| -m | choose module template,it's at 'pjx/module-template.go' | pjx module user -m test| to design module directories as wanted | module |
+| -u | jump existed package with the same name when meet command `merge` and `clone`| PJX merge g:/repo fwhezfwhez -u | avoid package exist error | merge, clone |
 
 ## 4. FAQ
 
@@ -160,4 +161,6 @@ If you don't like `xRouter`, `xService`... this kind of directories, you can jus
     <a href="http://i2.tiimg.com/684630/aac5c27572431f5f.gif"><img src="http://i2.tiimg.com/684630/aac5c27572431f5f.gif"></a>
 </p>
 
+#### 4.3 permission deny?
+Make sure the spot you execute `pjx` has proper permission. For instance, when you execute `pjx add xx`, you must has read permission to the package xx and write permission to pjx_path.This kind of question should never depend on pjx to fix it.
 
