@@ -38,12 +38,17 @@ func (p *Pjx) Usage() string {
 		"# package management:",
 		"\tpjx add <pkgName> [namespace] [tag]            add a current package into pjx local repo with specific namespace and tag, if not set,use global master by default",
 		"\tpjx use <pkgName> [namespace] [tag]            use a package from pjx local repo and pu into current dir, if not set namespace and tag, use global master by default",
+		"\tpjx merge <path> <namespace> [-f/-u]           merge packages from path into repo/namespace",
+		"\tpjx clone <url.git> <namespace> [-f/-u]        clone and merge from remote git repo",
+		"",
 		"example:",
 		"\tpjx new helloWorld                         new an app named helloWorld",
 		"\tcd helloWorld                              cd into helloWorld directory",
 		"\tpjx new module user                        new a module named user",
 		"\tpjx add helloWord                          add helloWord package into repo tag global master",
 		"\tpjx use helloWord -o helloWorld2           fetch helloWorld package from repo and rename it helloWorld2",
+		"\tpjx merge /home/web/repo/ fwhezfwhez -u    merge pkg from /home/web/repo/ into ${pjx_path}/fwhezfwhez",
+		"\tpjx clone https://github.com/fwhezfwhez/pjx-repo.git fwhezfwhez -u clone from url.git and merge into repo",
 	}
 	return strings.Join(usages, "\n")
 }
