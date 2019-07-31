@@ -133,7 +133,53 @@ Take helloworld for example:
 
 - `-o` add package with another name.
 
-## 3. Optional args
+## 3. Commands
+
+#### 3.1 `new`
+`pjx new <appName>` new a project
+```go
+pjx new hello
+```
+
+#### 3.2 `module`
+`pjx module <moduleName> [-m <key>]` using specific template to generate module.
+
+- To select module template, you can refer to FAQ 5.2.
+```go
+pjx module user
+pjx module shop -m test
+```
+
+#### 3.3 `add`
+`pjx add <packageName> [namespace] [tag] [-f]` add package into repo(at `${pjx_path}`). If pjx_path not set, they will be stored in user-home/pjx_path.
+```go
+pjx add hello // package hello will be add into pjx_path/global/hello
+pjx add hello fwhezfwhez master// package hello will be add into pjx_path/fwhezfwhez/hello
+pjx add hello global tmp // package hello will be add into pjx_path/global/hello@tmp
+```
+#### 3.4 `use`
+`pjx use <packageName> [namespace] [tag] [-o <rename>]` use a package from repo and insert to current dir.If pjx_path not set, use pjx_path default `user-home/pjx_path`.
+
+```go
+pjx use hello // use pjx_path/global/hello and insert to current dir.
+pjx use hello fwhezfwhez tmp -o hello2 // use pjx_path/fwhezfwhez/hello@tmp and insert into current dir with name hello2
+```
+
+#### 3.5 `merge`
+`pjx merge <path> <namespace> [-f/-u]` merge all packages in path into namespace
+```go
+pjx merge /home/web/repo global -f // copy all /home/web/repo's sub dir into pjx_path/global, if exists, replace the old.
+pjx merge /Users/web/repo fwhezfwhez -u // copy all /Users/web/repo's sub dir into pjx_path/fwhezfwhez, if exists, jump this.
+```
+
+#### 3.6 `clone`
+`pjx clone url.git <namespace> [-u/-f]` clone a remote repo,and copy all sub dir in it to pjx_path/<namespace>
+```go
+pjx clone https://github.com/fwhezfwhez/pjx-repo.git global -u  jump the existing case
+pjx clone https://github.com/fwhezfwhez/pjx-repo.git global -f  replace the existing old
+```
+
+## 4. Optional args
 
 | value | meaning | example | why | scope |
 | ---- | ---- | ---- | --- | ---- |
@@ -143,13 +189,13 @@ Take helloworld for example:
 | -m | choose module template,it's at 'pjx/module-template.go' | pjx module user -m test| to design module directories as wanted | module |
 | -u | jump existed package with the same name when meet command `merge` and `clone`| PJX merge g:/repo fwhezfwhez -u | avoid package exist error | merge, clone |
 
-## 4. FAQ
+## 5. FAQ
 
-#### 4.1. pjx command not found?
+#### 5.1. pjx command not found?
 
 `go get -u ...` or `go install` will put `pjx` execute file into ${GOPATH}/bin. Make sure your ${GOPATH}/bin is in your system path.
 
-#### 4.2. How to design module directories as wanted?
+#### 5.2. How to design module directories as wanted?
 
 If you don't like `xRouter`, `xService`... this kind of directories, you can just modify `module-template.go`.By default, there is two keys `default` and `test` to refer the template.Pjx will choose as below:
 
@@ -161,6 +207,6 @@ If you don't like `xRouter`, `xService`... this kind of directories, you can jus
     <a href="http://i2.tiimg.com/684630/aac5c27572431f5f.gif"><img src="http://i2.tiimg.com/684630/aac5c27572431f5f.gif"></a>
 </p>
 
-#### 4.3 permission deny?
+#### 5.3 permission deny?
 Make sure the spot you execute `pjx` has proper permission. For instance, when you execute `pjx add xx`, you must has read permission to the package xx and write permission to pjx_path.This kind of question should never depend on pjx to fix it.
 

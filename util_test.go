@@ -30,3 +30,6 @@ func TestSetPjxEnv(t *testing.T) {
 func TestCopyDirF(t *testing.T) {
     // CopyDirU(`G:\go_workspace\GOPATH\src\pjx\helo`, `G:\go_workspace\GOPATH\src\pjx\helo2`)
 }
+func TestGetGitName(t *testing.T) {
+	fmt.Println(GetGitName("https://ffff/ffffff/fff.git"))
+}

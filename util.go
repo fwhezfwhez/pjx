@@ -101,6 +101,17 @@ func CopyDirU(src string, dest string) {
 
 func DelDir(src string) {
 	src = FormatPath(src)
+
+	_, e := os.Stat(src)
+	if e != nil {
+		if os.IsNotExist(e) {
+			if IfLog(os.Args) {
+				logger.Println(fmt.Sprintf("del dir '%s' not found, do nothing", src))
+			}
+			return
+		}
+		panic(e)
+	}
 	switch runtime.GOOS {
 	case "windows":
 		os.RemoveAll(src)
@@ -218,4 +229,11 @@ func SetPjxEnv() {
 	if e := os.Setenv(key, value); e != nil {
 		panic(e)
 	}
+}
+
+// get srv from https://github.com/xxx/srv.git
+func GetGitName(src string) string {
+	arr := strings.Split(src, "/")
+
+	return strings.Split(arr[(len(arr) - 1)], ".")[0]
 }

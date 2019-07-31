@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
+	"os/exec"
+
 	//"os/exec"
 	"os/user"
 	"path"
@@ -104,9 +107,8 @@ func Cmd() {
 			usePkg(directoryName, namespace, tag)
 		}()
 	case "merge":
-		// pjx merge $path fwhezfwhez -f, 合并path下所有package进fwhezfwhez空间里，存在命名冲突时，覆盖
-		// pjx merge $path global -u, 合并path下所有package进global里，存在命名冲突时，跳过该包
-
+		// pjx merge path fwhefwhez -f
+		// pjx merge path global -u
 		src := args[1]
 		namespace := args[2]
 		mergePackage(src, namespace)
@@ -114,9 +116,9 @@ func Cmd() {
 	case "clone":
 		// pjx clone github.com/fwhezfwhez/pjx-packages.git fwhefwhez -f  从远程仓库中拉取并合并进fwhezfwhez空间里，命名冲突时，覆盖
 		// pjx clone github.com/fwhezfwhez/pjx-packages.git fwhefwhez -u  从远程仓库中拉取并合并进fwhezfwhez空间里，存在命名冲突时，跳过该包
-		//src := args[1]
-		//namespace := args[2]
-		// cloneFrom(src, namespace)
+		src := args[1]
+		namespace := args[2]
+		cloneFrom(src, namespace)
 	default:
 		fmt.Println(fmt.Sprintf("command '%s' not found", args[0]))
 	}
@@ -466,6 +468,9 @@ func mergePackage(src string, namespace string) {
 		panic(e)
 	}
 	for _, fi := range rd {
+		if strings.HasPrefix(fi.Name(), ".") {
+			continue
+		}
 		if !fi.IsDir() {
 			continue
 		}
@@ -473,13 +478,13 @@ func mergePackage(src string, namespace string) {
 		dest := PathJoin(os.Getenv("pjx_path"), namespace, fi.Name())
 
 		namespacePath := PathJoin(os.Getenv("pjx_path"), namespace)
-		_,e:=os.Stat(namespacePath)
-		if e!=nil {
+		_, e := os.Stat(namespacePath)
+		if e != nil {
 			if os.IsNotExist(e) {
-				if e:= os.Mkdir(namespacePath, os.ModePerm);e!=nil {
+				if e := os.Mkdir(namespacePath, os.ModePerm); e != nil {
 					panic(e)
 				}
-			}else{
+			} else {
 				panic(e)
 			}
 		}
@@ -494,4 +499,40 @@ func mergePackage(src string, namespace string) {
 		}
 	}
 	return
+}
+
+func cloneFrom(src, namespace string) {
+	pjName := GetGitName(src)
+	cmdList := []string{"clone", src, pjName}
+	cmd := exec.Command("git", cmdList...)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if e := cmd.Run(); e != nil {
+		panic(e)
+	}
+	if IfLog(os.Args) {
+		logger.Println(out.String())
+	}
+	out.Reset()
+	currentDir, e := os.Getwd()
+	if e != nil {
+		panic(e)
+	}
+	var f string
+	var u string
+	if IfForce(os.Args) {
+		f = "-f"
+	}
+	if IfU(os.Args) {
+		u = "-u"
+	}
+	cmdList = []string{"merge", PathJoin(currentDir, pjName), namespace, f, u}
+	cmd = exec.Command("pjx", cmdList...)
+	cmd.Stdout = &out
+	cmd.Run()
+	if IfLog(os.Args) {
+		logger.Println(out.String())
+	}
+	out.Reset()
+	DelDir(PathJoin(currentDir, pjName))
 }
