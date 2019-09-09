@@ -237,3 +237,38 @@ func GetGitName(src string) string {
 
 	return strings.Split(arr[(len(arr) - 1)], ".")[0]
 }
+
+// Split 增强型Split，对  a,,,,,,,b,,c     以","进行切割成[a,b,c]
+func Split(s string, sub string) []string {
+	var rs = make([]string, 0, 20)
+	tmp := ""
+	Split2(s, sub, &tmp, &rs)
+	return rs
+}
+
+// Split2 附属于Split，可独立使用
+func Split2(s string, sub string, tmp *string, rs *[]string) {
+	s = strings.Trim(s, sub)
+	if !strings.Contains(s, sub) {
+		*tmp = s
+		*rs = append(*rs, *tmp)
+		return
+	}
+	for i := range s {
+		if string(s[i]) == sub {
+			*tmp = s[:i]
+			*rs = append(*rs, *tmp)
+			s = s[i+1:]
+			Split2(s, sub, tmp, rs)
+			return
+		}
+	}
+}
+
+
+
+func profileCommand(rawCommands []string) []string {
+
+
+	return nil
+}

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -32,4 +33,19 @@ func TestCopyDirF(t *testing.T) {
 }
 func TestGetGitName(t *testing.T) {
 	fmt.Println(GetGitName("https://ffff/ffffff/fff.git"))
+
+	fmt.Println(strings.HasPrefix(`// hello`, `//`))
+}
+
+func TestProfileCommands(t *testing.T) {
+	rs :=profileCommand([]string{
+		"hello1 \\",
+		"hello2",
+		"hello3",
+		"hello4 \\",
+		"hello5 \\",
+		"hello6",
+	})
+	fmt.Println(len(rs))
+	fmt.Println(rs)
 }

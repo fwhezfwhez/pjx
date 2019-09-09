@@ -5,6 +5,7 @@ pjx is a tool helps auto-generate server side directories and some go code.Suppo
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
+- [pjx](#pjx)
 - [1. Start](#1-start)
 - [2. Module](#2-module)
     - [2.1 Directory generate](#21-directory-generate)
@@ -20,7 +21,8 @@ pjx is a tool helps auto-generate server side directories and some go code.Suppo
 - [5. FAQ](#5-faq)
     - [5.1. pjx command not found?](#51-pjx-command-not-found)
     - [5.2. How to design module directories as wanted?](#52-how-to-design-module-directories-as-wanted)
-    - [5.3 permission deny?](#53-permission-deny)
+    - [5.3. Permission deny?](#53-permission-deny)
+    - [5.4. Pjx-repo for sharing?](#54-pjx-repo-for-sharing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -152,7 +154,7 @@ pjx new hello
 #### 3.2 `module`
 `pjx module <moduleName> [-m <key>]` using specific template to generate module.
 
-- To select module template, you can refer to FAQ 5.2.
+- To select module template, you can refer to [5.2. How to design module directories as wanted?](#52-how-to-design-module-directories-as-wanted).
 ```go
 pjx module user
 pjx module shop -m test
@@ -181,6 +183,8 @@ pjx merge /Users/web/repo fwhezfwhez -u // copy all /Users/web/repo's sub dir in
 ```
 
 #### 3.6 `clone`
+
+**need install git. type `git --version` has well output`**
 `pjx clone url.git <namespace> [-u/-f]` clone a remote repo,and copy all sub dir in it to pjx_path/<namespace>
 ```go
 pjx clone https://github.com/fwhezfwhez/pjx-repo.git global -u  jump the existing case
@@ -215,6 +219,9 @@ If you don't like `xRouter`, `xService`... this kind of directories, you can jus
     <a href="http://i2.tiimg.com/684630/aac5c27572431f5f.gif"><img src="http://i2.tiimg.com/684630/aac5c27572431f5f.gif"></a>
 </p>
 
-#### 5.3 permission deny?
+#### 5.3. Permission deny?
 Make sure the spot you execute `pjx` has proper permission. For instance, when you execute `pjx add xx`, you must has read permission to the package xx and write permission to pjx_path.This kind of question should never depend on pjx to fix it.
 
+#### 5.4. Pjx-repo for sharing?
+Here is my personal repo sharing.It might change by time and might have dependency.But their usage will be easy and with specific doc.
+(https://github.com/fwhezfwhez/pjx)[https://github.com/fwhezfwhez/pjx]

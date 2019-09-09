@@ -112,13 +112,21 @@ func Cmd() {
 		src := args[1]
 		namespace := args[2]
 		mergePackage(src, namespace)
-
 	case "clone":
-		// pjx clone github.com/fwhezfwhez/pjx-packages.git fwhefwhez -f  从远程仓库中拉取并合并进fwhezfwhez空间里，命名冲突时，覆盖
-		// pjx clone github.com/fwhezfwhez/pjx-packages.git fwhefwhez -u  从远程仓库中拉取并合并进fwhezfwhez空间里，存在命名冲突时，跳过该包
 		src := args[1]
 		namespace := args[2]
 		cloneFrom(src, namespace)
+	case "test":
+		fmt.Println("test module are developing")
+	case "exec":
+		// pjx exec print-hello.pjx
+		// pjx exec print-hello
+		src := args[1]
+		if !strings.HasSuffix(src, ".pjx") {
+			src = src + ".pjx"
+		}
+		execFileCommand(src)
+
 	default:
 		fmt.Println(fmt.Sprintf("command '%s' not found", args[0]))
 	}
@@ -535,4 +543,7 @@ func cloneFrom(src, namespace string) {
 	}
 	out.Reset()
 	DelDir(PathJoin(currentDir, pjName))
+}
+
+func execFileCommand(src string) {
 }

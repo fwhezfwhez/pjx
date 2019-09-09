@@ -21,11 +21,12 @@ dirList:
 `
 
 var test = `
-package: elem
+package: empty
 dirList:
 - '{$object}Service'
 - '{$object}Router'
-- '{$object}Filter'
+- '{$object}Pb'
+- '{$object}Model'
 `
 
 
