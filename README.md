@@ -224,4 +224,4 @@ Make sure the spot you execute `pjx` has proper permission. For instance, when y
 
 #### 5.4. Pjx-repo for sharing?
 Here is my personal repo sharing.It might change by time and might have dependency.But their usage will be easy and with specific doc.
-https://github.com/fwhezfwhez/pjx
+https://github.com/fwhezfwhez/pjx-repo
