@@ -1,6 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"crypto/des"
+	"crypto/md5"
+	"encoding/hex"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -145,6 +150,7 @@ func IfForce(Arg []string) bool {
 	return false
 }
 
+// -l
 func IfLog(Arg []string) bool {
 	for _, v := range Arg {
 		if v == "-l" || v == "-L" || v == "--log" || v == "--Log" {
@@ -154,6 +160,7 @@ func IfLog(Arg []string) bool {
 	return false
 }
 
+// -u
 func IfU(Arg []string) bool {
 	for _, v := range Arg {
 		if v == "-u" || v == "-U" {
@@ -190,6 +197,22 @@ func rmAttach(arr []string) ([]string, map[string]string) {
 			if v == "-m" {
 				i += 1
 				kv["m"] = arr[i]
+				continue
+			}
+			if v == "-file" {
+				i += 1
+				kv["file"] = arr[i]
+				continue
+			}
+			if v == "-secret" {
+				i += 1
+				kv["secret"] = arr[i]
+				continue
+			}
+
+			if v== "-d" {
+				i +=1
+				kv["d"] = arr[i]
 				continue
 			}
 			continue
@@ -265,10 +288,93 @@ func Split2(s string, sub string, tmp *string, rs *[]string) {
 	}
 }
 
-
-
-func profileCommand(rawCommands []string) []string {
-
-
-	return nil
+func Encrypt(content []byte, key string) (string, error) {
+	if key == "" {
+		panic("secret emtpy")
+	}
+	key = MD5(key)[:8]
+	src := []byte(content)
+	block, err := des.NewCipher([]byte(key))
+	if err != nil {
+		return "", err
+	}
+	bs := block.BlockSize()
+	src = ZeroPadding(src, bs)
+	if len(src)%bs != 0 {
+		return "", errors.New("Need a multiple of the blocksize")
+	}
+	out := make([]byte, len(src))
+	dst := out
+	for len(src) > 0 {
+		block.Encrypt(dst, src[:bs])
+		src = src[bs:]
+		dst = dst[bs:]
+	}
+	return hex.EncodeToString(out), nil
 }
+
+func Decrypt(decrypted string, keyStr string) ([]byte, error) {
+	keyStr = MD5(keyStr)[0:8]
+	key := []byte(keyStr)
+	src, err := hex.DecodeString(decrypted)
+	if err != nil {
+		return nil, err
+	}
+	block, err := des.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]byte, len(src))
+	dst := out
+	bs := block.BlockSize()
+	if len(src)%bs != 0 {
+		return nil, errors.New("crypto/cipher: input not full blocks")
+	}
+	for len(src) > 0 {
+		block.Decrypt(dst, src[:bs])
+		src = src[bs:]
+		dst = dst[bs:]
+	}
+	out = ZeroUnPadding(out)
+	return out, nil
+}
+
+func ZeroPadding(ciphertext []byte, blockSize int) []byte {
+	padding := blockSize - len(ciphertext)%blockSize
+	padtext := bytes.Repeat([]byte{0}, padding)
+	return append(ciphertext, padtext...)
+}
+
+func ZeroUnPadding(origData []byte) []byte {
+	return bytes.TrimFunc(origData,
+		func(r rune) bool {
+			return r == rune(0)
+		})
+}
+
+// md5 加密
+func MD5(rawMsg string) string {
+	data := []byte(rawMsg)
+	has := md5.Sum(data)
+	md5str1 := fmt.Sprintf("%x", has)
+	return strings.ToUpper(md5str1)
+}
+
+// get dir of a file
+func DirOf(fileName string) string {
+	return path.Dir(fileName)
+}
+
+func IfReg(Arg []string) bool {
+	for _, v := range Arg {
+		if v == "-r" || v == "-R" || v == "-P" || v == "-p" || v == "reg" || v == "regex" {
+			return true
+		}
+	}
+	return false
+}
+
+func IfPartern(Arg []string) bool {
+	return IfReg(Arg)
+}
+

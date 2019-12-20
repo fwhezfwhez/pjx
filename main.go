@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"gopkg.in/yaml.v2"
@@ -126,10 +127,136 @@ func Cmd() {
 			src = src + ".pjx"
 		}
 		execFileCommand(src)
+	case "encrypt":
+		secret := pj.KV["secret"]
+		if secret == "" {
+			f := bufio.NewReader(os.Stdin)
+			input, _ := f.ReadString('\n')
+			secret = input
+		}
+
+		file := pj.KV["file"]
+		encryptConfigFile(file, secret)
 
 	default:
 		fmt.Println(fmt.Sprintf("command '%s' not found", args[0]))
 	}
+}
+
+func handleEncrypt(fileNames string, secret string) {
+	var IfReg = IfReg(os.Args)
+	var dir = pj.KV["d"]
+	if dir == "" {
+		var e error
+		dir, e = os.Getwd()
+		if e != nil {
+			panic(e)
+		}
+	}
+	dir = FormatPath(dir)
+
+	fileNameArr := strings.Split(fileNames, ",")
+	for _, v := range fileNameArr {
+		v = strings.TrimSpace(v)
+		if !IfReg {
+			encryptConfigFile(v, secret)
+		} else {
+			//path.Base()
+			if strings.Contains(v, "/") || strings.Contains(v, "\\") {
+				panic("regex can't decode filenames containing \\ or /")
+			}
+			// path.Match(v, )
+			files, err := ioutil.ReadDir(dir) //读取目录下文件
+			if err != nil {
+				return
+			}
+
+			for _, file := range files {
+				if file.IsDir() {
+					continue
+				}
+				matched, e := path.Match(v, file.Name())
+				if e != nil {
+					panic(e)
+				}
+
+				if matched {
+					encryptConfigFile(path.Join(dir, file.Name()), secret)
+				}
+			}
+		}
+	}
+}
+
+func encryptConfigFile(fileName string, secret string) {
+	path := FormatPath(fileName)
+	_, e := os.Stat(path)
+	if e == os.ErrNotExist {
+		panic(fmt.Errorf("file '%s' not found", path))
+	}
+	f, e := os.OpenFile(path, os.O_RDWR, os.ModePerm)
+	if e != nil {
+		panic(e)
+	}
+	defer f.Close()
+
+	b, e := ioutil.ReadAll(f)
+	if e != nil {
+		panic(e)
+	}
+	fmt.Println(string(b))
+
+	newFilePath := path + ".crt"
+
+	f2, e := os.OpenFile(newFilePath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, os.ModePerm)
+	if e != nil {
+		panic(e)
+	}
+	defer f2.Close()
+
+	crtContent, e := Encrypt(b, secret)
+	if e != nil {
+		panic(e)
+	}
+	f2.Write([]byte(crtContent))
+}
+
+func decryptConfigFile(fileName string, secret string) {
+	path := FormatPath(fileName)
+	_, e := os.Stat(path)
+	if e == os.ErrNotExist {
+		panic(fmt.Errorf("file '%s' not found", path))
+	}
+
+	if !strings.HasSuffix(fileName, ".crt") {
+		panic(fmt.Errorf("only decrypt file ended with '.crt' but got '%s'", fileName))
+	}
+
+	f, e := os.OpenFile(path, os.O_RDWR, os.ModePerm)
+	if e != nil {
+		panic(e)
+	}
+	defer f.Close()
+
+	b, e := ioutil.ReadAll(f)
+	if e != nil {
+		panic(e)
+	}
+	fmt.Println(string(b))
+
+	newFilePath := strings.TrimSuffix(path, ".crt")
+
+	f2, e := os.OpenFile(newFilePath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, os.ModePerm)
+	if e != nil {
+		panic(e)
+	}
+	defer f2.Close()
+
+	crtContent, e := Decrypt(string(b), secret)
+	if e != nil {
+		panic(e)
+	}
+	f2.Write([]byte(crtContent))
 }
 
 func newApp(appName string) {

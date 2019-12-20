@@ -13,9 +13,9 @@ type Pjx struct {
 	KV map[string]string
 
 	// receive -l, whether open log
-	IfLog    bool
+	IfLog bool
 	// receive -f, whether do command by force
-	IfForce  bool
+	IfForce bool
 
 	// receive -o flag, in different command, it refers to different meaning, like pjx use db -o db2,
 	// fetch a db from global master and put it into current path and name it db2.
@@ -23,7 +23,7 @@ type Pjx struct {
 }
 
 func (p *Pjx) Version() string {
-	return "v2.2.6"
+	return "v2.3.0"
 }
 func (p *Pjx) Usage() string {
 	var usages = []string{
