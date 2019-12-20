@@ -201,7 +201,13 @@ pjx clone https://github.com/fwhezfwhez/pjx-repo.git global -f  replace the exis
 #### 3.7 `encrypt`, `decrypt`
 encrypt config files and decrypt.
 
+<p align="left">
+    <a href="https://user-images.githubusercontent.com/36189053/71233242-f63f4c80-232f-11ea-9ce1-4dc76dcadea3.gif"><img src="https://user-images.githubusercontent.com/36189053/71233242-f63f4c80-232f-11ea-9ce1-4dc76dcadea3.gif"></a>
+</p>
+
+
 `pjx encrypt *.json` encrypt config files into old_name.crt
+
 `pjx decrypt *.crt`  decrypt config files ended with .crt back
 ## 4. Optional args
 
