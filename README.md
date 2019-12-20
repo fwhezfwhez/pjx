@@ -153,7 +153,7 @@ Take helloworld for example:
 
 #### 2.3 Config files encrypt and decrypt
 
-refer to (https://github.com/fwhezfwhez/pjx/tree/master/modules/encrypt-decrypt)[https://github.com/fwhezfwhez/pjx/tree/master/modules/encrypt-decrypt]
+refer to https://github.com/fwhezfwhez/pjx/tree/master/modules/encrypt-decrypt
 
 ## 3. Commands
 
