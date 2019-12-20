@@ -11,6 +11,7 @@ pjx is a tool helps auto-generate server side directories and some go code.Suppo
 - [2. Module](#2-module)
     - [2.1 Directory generate](#21-directory-generate)
     - [2.2 Package storage and migration](#22-package-storage-and-migration)
+    - [2.3 Config files encrypt and decrypt](#23-config-files-encrypt-and-decrypt)
 - [3. Commands](#3-commands)
     - [3.1 `new`](#31-new)
     - [3.2 `module`](#32-module)
@@ -150,6 +151,10 @@ Take helloworld for example:
 
 - `-o` add package with another name.
 
+#### 2.3 Config files encrypt and decrypt
+
+refer to (https://github.com/fwhezfwhez/pjx/tree/master/modules/encrypt-decrypt)[https://github.com/fwhezfwhez/pjx/tree/master/modules/encrypt-decrypt]
+
 ## 3. Commands
 
 #### 3.1 `new`
@@ -204,7 +209,6 @@ encrypt config files and decrypt.
 <p align="left">
     <a href="https://user-images.githubusercontent.com/36189053/71233242-f63f4c80-232f-11ea-9ce1-4dc76dcadea3.gif"><img src="https://user-images.githubusercontent.com/36189053/71233242-f63f4c80-232f-11ea-9ce1-4dc76dcadea3.gif"></a>
 </p>
-
 
 `pjx encrypt *.json` encrypt config files into old_name.crt
 
