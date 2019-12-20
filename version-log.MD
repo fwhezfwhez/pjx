@@ -23,3 +23,8 @@
    - `pjx clone <git-repo> <namespace> [-f] [-u]`
    
         `pjx clone https://github.com/fwhezfwhez/pjx-repo.git global -f`  add packages from https://github.com/fwhezfwhez/pjx-repo.git into `${pjx_path}/global`, if existing the same folder,replace the olds.
+
+#### v2.3.0
+1. add commands:
+    - `pjx encrypt [-file] *.json [-d <dir-path>] [-secret <secret>]` encrypt files endwith xx.json to xx.json.crt
+    - `pjx decrypt [-file] *.crt [-d <dir-path>] [-secret <secret>]`  decrypt xxx.crt to xxx

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
 	"gopkg.in/yaml.v2"
@@ -9,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/howeyc/gopass"
 	//"os/exec"
 	"os/user"
 	"path"
@@ -130,13 +130,37 @@ func Cmd() {
 	case "encrypt":
 		secret := pj.KV["secret"]
 		if secret == "" {
-			f := bufio.NewReader(os.Stdin)
-			input, _ := f.ReadString('\n')
-			secret = input
+			fmt.Print("Please input secret key:")
+			pw, e := gopass.GetPasswdMasked()
+			if e != nil {
+				panic(e)
+			}
+			secret = string(pw)
 		}
 
 		file := pj.KV["file"]
-		encryptConfigFile(file, secret)
+
+		if file == "" {
+			file = strings.Join(args[1:], ",")
+		}
+		handleEncrypt(file, secret)
+	case "decrypt":
+		secret := pj.KV["secret"]
+		if secret == "" {
+			fmt.Print("Please input secret key:")
+			pw, e := gopass.GetPasswdMasked()
+			if e != nil {
+				panic(e)
+			}
+			secret = string(pw)
+		}
+
+		file := pj.KV["file"]
+
+		if file == "" {
+			file = strings.Join(args[1:], ",")
+		}
+		handleDecrypt(file, secret)
 
 	default:
 		fmt.Println(fmt.Sprintf("command '%s' not found", args[0]))
@@ -188,6 +212,54 @@ func handleEncrypt(fileNames string, secret string) {
 	}
 }
 
+func handleDecrypt(fileNames string, secret string) {
+	var IfReg = IfReg(os.Args)
+	var dir = pj.KV["d"]
+	if dir == "" {
+		var e error
+		dir, e = os.Getwd()
+		if e != nil {
+			panic(e)
+		}
+	}
+	dir = FormatPath(dir)
+
+	fileNameArr := strings.Split(fileNames, ",")
+	for _, v := range fileNameArr {
+		v = strings.TrimSpace(v)
+		if !IfReg {
+			decryptConfigFile(v, secret)
+		} else {
+			//path.Base()
+			if strings.Contains(v, "/") || strings.Contains(v, "\\") {
+				panic("regex can't decode filenames containing \\ or /")
+			}
+			// path.Match(v, )
+			files, err := ioutil.ReadDir(dir) //读取目录下文件
+			if err != nil {
+				return
+			}
+
+			for _, file := range files {
+				if !strings.HasSuffix(file.Name(), ".crt") {
+					continue
+				}
+				if file.IsDir() {
+					continue
+				}
+				matched, e := path.Match(v, file.Name())
+				if e != nil {
+					panic(e)
+				}
+
+				if matched {
+					decryptConfigFile(path.Join(dir, file.Name()), secret)
+				}
+			}
+		}
+	}
+}
+
 func encryptConfigFile(fileName string, secret string) {
 	path := FormatPath(fileName)
 	_, e := os.Stat(path)
@@ -196,7 +268,7 @@ func encryptConfigFile(fileName string, secret string) {
 	}
 	f, e := os.OpenFile(path, os.O_RDWR, os.ModePerm)
 	if e != nil {
-		panic(e)
+		panic(fmt.Errorf("open '%s' err '%v'", fileName, e))
 	}
 	defer f.Close()
 

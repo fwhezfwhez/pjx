@@ -5,8 +5,9 @@ pjx is a tool helps auto-generate server side directories and some go code.Suppo
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [pjx](#pjx)
 - [1. Start](#1-start)
+    - [GOPATH](#gopath)
+    - [GOMODULE](#gomodule)
 - [2. Module](#2-module)
     - [2.1 Directory generate](#21-directory-generate)
     - [2.2 Package storage and migration](#22-package-storage-and-migration)
@@ -17,6 +18,7 @@ pjx is a tool helps auto-generate server side directories and some go code.Suppo
     - [3.4 `use`](#34-use)
     - [3.5 `merge`](#35-merge)
     - [3.6 `clone`](#36-clone)
+    - [3.7 `encrypt`, `decrypt`](#37-encrypt-decrypt)
 - [4. Optional args](#4-optional-args)
 - [5. FAQ](#5-faq)
     - [5.1. pjx command not found?](#51-pjx-command-not-found)
@@ -28,6 +30,8 @@ pjx is a tool helps auto-generate server side directories and some go code.Suppo
 
 ## 1. Start
 
+#### GOPATH
+
 way 1:
 
 - `go get -u github.com/fwhezfwhez/pjx`
@@ -38,6 +42,9 @@ way 2:
 - `cd pjx`
 - `go install`
 
+#### GOMODULE
+- `git clone https://github.com/fwhezfwhez/pjx.git`
+- `go install`
 
 Make sure in cmd type `pjx --version`, output normal.
 
@@ -191,6 +198,11 @@ pjx clone https://github.com/fwhezfwhez/pjx-repo.git global -u  jump the existin
 pjx clone https://github.com/fwhezfwhez/pjx-repo.git global -f  replace the existing old
 ```
 
+#### 3.7 `encrypt`, `decrypt`
+encrypt config files and decrypt.
+
+`pjx encrypt *.json` encrypt config files into old_name.crt
+`pjx decrypt *.crt`  decrypt config files ended with .crt back
 ## 4. Optional args
 
 | value | meaning | example | why | scope |

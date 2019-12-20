@@ -210,8 +210,8 @@ func rmAttach(arr []string) ([]string, map[string]string) {
 				continue
 			}
 
-			if v== "-d" {
-				i +=1
+			if v == "-d" {
+				i += 1
 				kv["d"] = arr[i]
 				continue
 			}
@@ -335,6 +335,7 @@ func Decrypt(decrypted string, keyStr string) ([]byte, error) {
 		src = src[bs:]
 		dst = dst[bs:]
 	}
+
 	out = ZeroUnPadding(out)
 	return out, nil
 }
@@ -366,6 +367,7 @@ func DirOf(fileName string) string {
 }
 
 func IfReg(Arg []string) bool {
+	return true
 	for _, v := range Arg {
 		if v == "-r" || v == "-R" || v == "-P" || v == "-p" || v == "reg" || v == "regex" {
 			return true
@@ -377,4 +379,3 @@ func IfReg(Arg []string) bool {
 func IfPartern(Arg []string) bool {
 	return IfReg(Arg)
 }
-

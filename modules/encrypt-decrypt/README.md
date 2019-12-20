@@ -11,7 +11,8 @@ pjx encrypt -file *.json -secret helloworld
 # shortest
 cd G:\go_workspace\GOPATH\src\pjx\modules\encrypt-decrypt\config
 # After input below, will require you to input secret, input helloworld
-pjx encrypt -file *.json
+# equal to `pjx encrypt 2.json,3.json`
+pjx encrypt *.json
 ```
 This command will locate ``.../config/2.json` and `3.json` and build `3.json.crt`, `2.json.crt`
 
