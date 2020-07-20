@@ -215,6 +215,12 @@ func rmAttach(arr []string) ([]string, map[string]string) {
 				kv["d"] = arr[i]
 				continue
 			}
+
+			if v == "-p" {
+				i += 1
+				kv["p"] = arr[i]
+				continue
+			}
 			continue
 		} else {
 			newArr = append(newArr, v)

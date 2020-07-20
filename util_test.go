@@ -12,7 +12,7 @@ func TestFormatPath(t *testing.T) {
 }
 
 func TestRmAttach(t *testing.T) {
-	fmt.Println(rmAttach([]string{"pjx", "use", "hello", "-o", "hello2"}))
+	fmt.Println(rmAttach([]string{"pjx", "module", "user", "-p", "k1"}))
 }
 
 func TestDelDir(t *testing.T) {

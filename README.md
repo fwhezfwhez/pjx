@@ -99,6 +99,9 @@ module
   |     | -- userService
   |     | -- userTestClient
   |     | -- userExport
+  |     | -- userControl
+  |     | -- userJob
+  |     | -- main.go
   | ...
 ```
 
@@ -108,9 +111,11 @@ What are they?
 - userPb: proto file and generated go file.
 - userModel: db model or service model.
 - userRouter: http, tcp router.
-- userService: http, tcp service codes.
+- userControl: place to receive request body from router, also a place to handle error.
+- userService: http, tcp service codes.Errors from here will be return.
 - userTestClient: generate test as client codes.
-- userExport: export user module as a single server.
+- userExport: export user module as another single server.It's a sub-node of user/main.go
+- userJob: cron jobs.
 
 Commands are below:
 
@@ -247,3 +252,9 @@ Make sure the spot you execute `pjx` has proper permission. For instance, when y
 #### 5.4. Pjx-repo for sharing?
 Here is my personal repo sharing.It might change by time and might have dependency.But their usage will be easy and with specific doc.
 https://github.com/fwhezfwhez/pjx-repo
+
+#### 5.5. Add modules in specific folder whose name is not 'module'?
+```
+# add module 'order' into your folder.
+pjx module order -p 'your-folder-name'
+```

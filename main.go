@@ -44,6 +44,7 @@ func Cmd() {
 	pj.IfForce = IfForce(os.Args)
 
 	args, kv := rmAttach(os.Args[1:])
+
 	pj.KV = kv
 	pj.O = kv["o"]
 
@@ -420,6 +421,10 @@ func newModule(moduleName string) {
 	if e != nil {
 		panic(e)
 	}
+	var p = pj.KV["p"]
+	if p != "" {
+		tmpl.Package = p
+	}
 
 	_, e = os.Stat(PathJoin(pj.AppPath, tmpl.Package))
 	if e != nil {
@@ -444,6 +449,19 @@ func newModule(moduleName string) {
 			return
 		}
 	}
+
+	if f, e := os.OpenFile(path.Join(pj.AppPath, tmpl.Package, moduleName, "main.go"), os.O_CREATE|os.O_RDWR, os.ModePerm); e != nil {
+		fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+		return
+	} else {
+		defer f.Close()
+		_, e := f.Write(tmplMainGo)
+		if e != nil {
+			fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
+			return
+		}
+	}
+
 	//if e := os.Mkdir(PathJoin(pj.AppPath, tmpl.Package, moduleName, fmt.Sprintf("%s%s", moduleName, "Pb")), os.ModePerm); e != nil {
 	//	fmt.Println(fmt.Sprintf("%v\n%s", e, debug.Stack()))
 	//	return
