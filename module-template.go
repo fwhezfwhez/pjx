@@ -18,6 +18,8 @@ dirList:
 - '{$object}Pb'
 - '{$object}Export'
 - '{$object}TestClient'
+- '{$object}Job'
+- '{$object}Control'
 `
 
 var test = `
