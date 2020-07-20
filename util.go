@@ -188,6 +188,9 @@ func rmAttach(arr []string) ([]string, map[string]string) {
 	var kv = make(map[string]string, 0)
 	for i := 0; i < len(arr); i++ {
 		v := arr[i]
+		if v == "--help" || v=="--version"{
+			newArr = append(newArr, v)
+		}
 		if strings.HasPrefix(v, "-") || strings.HasPrefix(v, "--") {
 			if v == "-o" {
 				i += 1

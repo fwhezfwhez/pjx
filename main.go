@@ -44,7 +44,7 @@ func Cmd() {
 	pj.IfForce = IfForce(os.Args)
 
 	args, kv := rmAttach(os.Args[1:])
-
+	//fmt.Println(args)
 	pj.KV = kv
 	pj.O = kv["o"]
 
