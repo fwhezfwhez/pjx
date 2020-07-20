@@ -16,7 +16,6 @@ dirList:
 - '{$object}Router'
 - '{$object}Model'
 - '{$object}Pb'
-- '{$object}Export'
 - '{$object}TestClient'
 - '{$object}Job'
 - '{$object}Control'
